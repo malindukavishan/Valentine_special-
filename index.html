@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternity | Premium Card Experience</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;800&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            100: '#FBF5E6',
+                            200: '#F3E5BC',
+                            300: '#E6C87C',
+                            400: '#DAB056',
+                            500: '#C59D3F', 
+                            600: '#A6822D',
+                        },
+                        rose: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            300: '#fda4af',
+                            500: '#f43f5e',
+                            700: '#be123c',
+                            900: '#881337',
+                            950: '#4c0519',
+                        },
+                        dark: {
+                            950: '#020000',
+                            900: '#0a0000',
+                            800: '#110505',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        display: ['Cinzel', 'serif'],
+                        script: ['Great Vibes', 'cursive'],
+                        sans: ['Lato', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'romance-gradient': 'radial-gradient(circle at center, #2a0a10 0%, #000000 100%)',
+                    },
+                    animation: {
+                        'spin-slow': 'spin 12s linear infinite',
+                        'heartbeat': 'heartbeat 3s ease-in-out infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'shimmer': 'shimmer 4s infinite linear',
+                    },
+                    keyframes: {
+                        heartbeat: {
+                            '0%, 100%': { transform: 'scale(1)', opacity: '0.8' },
+                            '50%': { transform: 'scale(1.05)', opacity: '1' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200% center' },
+                            '100%': { backgroundPosition: '200% center' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Global & Reset */
+        body {
+            background-color: #050000;
+            color: #f0f0f0;
+            overflow-x: hidden;
+            font-family: 'Playfair Display', serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Backgrounds */
+        .bg-vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, #000000 85%);
+            z-index: -15;
+            pointer-events: none;
+        }
+
+        .bg-grain {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(30, 10, 15, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(244, 63, 94, 0.1);
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(20, 0, 0, 0.4);
+            position: relative;
+        }
+        
+        .glass-panel-bordered::after {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border: 1px solid rgba(197, 157, 63, 0.1);
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        .glass-input {
+            background: rgba(255, 240, 245, 0.03);
+            border-bottom: 1px solid rgba(197, 157, 63, 0.2);
+            border-top: none; 
+            border-left: none; 
+            border-right: none;
+            transition: all 0.5s ease;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .glass-input:focus {
+            background: rgba(255, 240, 245, 0.06);
+            border-bottom-color: #f43f5e;
+            outline: none;
+            box-shadow: 0 15px 30px -5px rgba(244, 63, 94, 0.1);
+        }
+
+        /* Typography */
+        .text-shimmer {
+            background: linear-gradient(110deg, #A6822D 10%, #fda4af 40%, #ffffff 50%, #fda4af 60%, #A6822D 90%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shimmer 5s linear infinite;
+        }
+
+        .text-glow {
+            text-shadow: 0 0 30px rgba(244, 63, 94, 0.4);
+        }
+
+        /* Rings Animation */
+        .rings-stage {
+            perspective: 1200px;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        
+        .ring-set {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: rings-float 6s ease-in-out infinite;
+        }
+
+        .ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid;
+            transform-style: preserve-3d;
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.2), inset 0 0 15px rgba(197, 157, 63, 0.1);
+        }
+
+        .ring-1 {
+            border-color: #E6C87C;
+            transform: rotateX(70deg);
+            animation: ring-spin-1 15s linear infinite;
+        }
+
+        .ring-2 {
+            border-color: #fb7185;
+            top: 15px; left: 15px;
+            transform: rotateX(70deg);
+            animation: ring-spin-2 15s linear infinite;
+        }
+
+        .ring::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.7);
+        }
+
+        @keyframes ring-spin-1 {
+            0% { transform: rotateX(70deg) rotateZ(0deg); }
+            100% { transform: rotateX(70deg) rotateZ(360deg); }
+        }
+
+        @keyframes ring-spin-2 {
+            0% { transform: rotateX(70deg) rotateZ(90deg); }
+            100% { transform: rotateX(70deg) rotateZ(450deg); }
+        }
+
+        @keyframes rings-float {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-15px) rotateY(5deg); }
+        }
+
+        /* Transitions: Reordered to ensure active state overrides hidden state */
+        .fade-hidden {
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+            pointer-events: none;
+        }
+
+        .fade-enter-active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto; /* CRITICAL FIX: Re-enable clicking */
+            transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1), transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .cursor::after {
+            content: '';
+            display: inline-block;
+            width: 1px;
+            height: 1.2em;
+            background-color: #f43f5e;
+            margin-left: 2px;
+            vertical-align: text-bottom;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 0.6; } 50% { opacity: 0; } }
+
+        .divider-svg {
+            width: 100%;
+            max-width: 180px;
+            height: auto;
+            fill: none;
+            stroke: #f43f5e;
+            stroke-width: 0.5;
+            opacity: 0.5;
+            margin: 0 auto;
+        }
+    </style>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="antialiased selection:bg-rose-900/40 selection:text-rose-100">
+
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/24/audio_07826806db.mp3?filename=piano-moment-11624.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="fixed inset-0 bg-romance-gradient -z-30"></div>
+    <div class="bg-vignette"></div>
+    <div class="bg-grain"></div>
+    <canvas id="particle-canvas" class="fixed inset-0 -z-10 opacity-50"></canvas>
+
+    <div id="app" class="relative min-h-screen flex items-center justify-center p-4 md:p-8">
+
+        <!-- 1. LANDING -->
+        <section id="landing-section" class="max-w-4xl w-full text-center transition-all duration-1000 opacity-0 transform translate-y-4">
+            <div class="space-y-12 animate-float">
+                <div class="flex flex-col items-center gap-4 opacity-80">
+                    <div class="h-12 w-[1px] bg-gradient-to-b from-transparent to-rose-400"></div>
+                    <span class="text-rose-200 text-[10px] tracking-[0.6em] font-display uppercase ml-1">Eternity</span>
+                </div>
+                
+                <div class="space-y-8">
+                    <h1 class="text-5xl md:text-8xl font-display font-medium text-white tracking-tight drop-shadow-2xl">
+                        Create a <span class="italic font-script text-rose-500 text-7xl md:text-9xl relative top-2 pr-4">Moment</span>
+                    </h1>
+                    <p class="text-xl md:text-3xl font-light text-rose-100/60 font-serif tracking-wide">For The One You Love</p>
+                </div>
+                
+                <p class="text-gray-400 text-sm md:text-base font-serif italic max-w-md mx-auto leading-loose">
+                    A cinematic gesture of romance. Timeless, elegant, and forever yours.
+                </p>
+
+                <div class="pt-12">
+                    <button onclick="router.navigateTo('create')" class="group relative px-14 py-5 bg-transparent overflow-hidden transition-all duration-700">
+                        <div class="absolute inset-0 w-full h-full border border-rose-500/30 skew-x-12 group-hover:skew-x-0 group-hover:border-rose-400/60 transition-all duration-700"></div>
+                        <div class="absolute inset-0 w-full h-full border border-rose-500/30 -skew-x-12 group-hover:skew-x-0 group-hover:border-rose-400/60 transition-all duration-700"></div>
+                        <span class="relative text-rose-100 font-display tracking-[0.3em] text-xs uppercase group-hover:text-white transition-colors duration-500">Begin</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. CREATE -->
+        <section id="create-section" class="max-w-xl w-full fade-hidden transition-all duration-1000 hidden">
+            <div class="glass-panel glass-panel-bordered p-8 md:p-14 rounded-sm">
+                <div class="text-center mb-14 space-y-3">
+                    <h2 class="text-3xl md:text-4xl font-display text-rose-100">Your Letter</h2>
+                    <div class="h-[1px] w-12 bg-rose-500/30 mx-auto"></div>
+                </div>
+
+                <form id="card-form" class="space-y-12" onsubmit="handleFormSubmit(event)">
+                    <div class="space-y-10">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div class="relative group">
+                                <input type="text" id="input-from" required placeholder=" " 
+                                    class="glass-input w-full pb-3 text-lg text-white bg-transparent focus:ring-0 peer text-center md:text-left">
+                                <label class="absolute left-0 -top-5 text-[10px] uppercase tracking-[0.2em] text-rose-400/60 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-0 peer-placeholder-shown:text-gray-500 peer-focus:-top-5 peer-focus:text-[10px] peer-focus:text-rose-400 w-full text-center md:text-left pointer-events-none">Your Name</label>
+                            </div>
+                            <div class="relative group">
+                                <input type="text" id="input-to" required placeholder=" " 
+                                    class="glass-input w-full pb-3 text-lg text-white bg-transparent focus:ring-0 peer text-center md:text-left">
+                                <label class="absolute left-0 -top-5 text-[10px] uppercase tracking-[0.2em] text-rose-400/60 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-0 peer-placeholder-shown:text-gray-500 peer-focus:-top-5 peer-focus:text-[10px] peer-focus:text-rose-400 w-full text-center md:text-left pointer-events-none">Their Name</label>
+                            </div>
+                        </div>
+
+                        <div class="relative group">
+                            <textarea id="input-msg" required rows="4" placeholder=" " 
+                                class="glass-input w-full pb-2 text-lg text-white bg-transparent resize-none leading-loose peer"></textarea>
+                            <label class="absolute left-0 -top-5 text-[10px] uppercase tracking-[0.2em] text-rose-400/60 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-0 peer-placeholder-shown:text-gray-500 peer-focus:-top-5 peer-focus:text-[10px] peer-focus:text-rose-400 pointer-events-none">Message from the Heart</label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                        <span class="text-[10px] uppercase tracking-widest text-rose-300">Romantic Music</span>
+                        <div class="relative inline-block w-8 h-4 align-middle select-none">
+                            <input type="checkbox" id="music-toggle" checked class="absolute block w-4 h-4 rounded-full bg-rose-500 border-none appearance-none cursor-pointer checked:right-0 right-4 transition-all duration-300"/>
+                            <div class="block overflow-hidden h-4 rounded-full border border-rose-500/30 cursor-pointer"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6 pt-6">
+                        <button type="submit" class="w-full py-4 bg-gradient-to-r from-rose-900 via-rose-700 to-rose-900 text-rose-100 border border-rose-500/30 font-display font-bold tracking-[0.3em] text-xs uppercase rounded-sm hover:shadow-[0_0_30px_rgba(244,63,94,0.3)] transition-all duration-500 transform hover:scale-[1.01]">
+                            Seal With Love
+                        </button>
+                        <button type="button" onclick="router.navigateTo('landing')" class="w-full text-[10px] text-rose-500/40 hover:text-rose-300 transition-colors uppercase tracking-[0.2em]">
+                            Back
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 3. SHARE -->
+        <section id="share-section" class="max-w-lg w-full text-center fade-hidden transition-all duration-1000 hidden">
+            <div class="glass-panel glass-panel-bordered p-12 rounded-sm animate-float">
+                <div class="w-20 h-20 border border-rose-500/20 rounded-full flex items-center justify-center mx-auto mb-10 text-rose-400 shadow-[0_0_30px_rgba(244,63,94,0.1)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                
+                <h2 class="text-3xl font-display text-white mb-4">It Is Sealed.</h2>
+                <p class="text-rose-200/60 mb-12 text-sm font-serif italic">Share this link with your beloved.</p>
+
+                <div class="relative mb-10 group">
+                    <input type="text" id="share-link-input" readonly class="w-full bg-black/40 border-b border-rose-500/30 py-4 px-2 text-[10px] md:text-xs text-rose-100 pr-20 font-mono tracking-wider focus:outline-none focus:border-rose-500/60 transition-colors text-center">
+                    <button onclick="copyLink()" class="absolute right-0 top-0 bottom-0 text-rose-500 hover:text-rose-300 text-[10px] font-bold uppercase tracking-widest transition-colors px-4">
+                        Copy
+                    </button>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <button id="btn-preview" class="w-full py-4 border border-rose-500/20 text-rose-200 hover:bg-rose-900/20 hover:border-rose-500/40 rounded-sm font-display uppercase tracking-[0.2em] text-[10px] transition-all duration-500">
+                        Preview Letter
+                    </button>
+                    <button onclick="router.navigateTo('create')" class="text-[10px] text-gray-600 hover:text-rose-500 py-2 uppercase tracking-widest transition-colors">Write Another</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. DISPLAY -->
+        <section id="card-display" class="fixed inset-0 z-50 bg-black hidden flex flex-col items-center justify-center overflow-hidden">
+            <div id="opener" class="absolute inset-0 z-[60] bg-romance-gradient flex flex-col items-center justify-center transition-opacity duration-1000">
+                <div class="text-center cursor-pointer group p-10" onclick="playCardSequence()">
+                    <div class="relative w-32 h-32 mx-auto flex items-center justify-center mb-10">
+                        <div class="absolute inset-0 bg-rose-600/20 blur-2xl rounded-full animate-heartbeat"></div>
+                        <div class="relative z-10 animate-heartbeat">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-rose-500 drop-shadow-[0_0_15px_rgba(244,63,94,0.6)]" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-rose-400/60 font-display tracking-[0.4em] text-[10px] uppercase group-hover:text-rose-200 transition-colors duration-700">Open Your Heart</p>
+                </div>
+            </div>
+
+            <div id="card-content" class="relative z-10 w-full h-full flex flex-col items-center justify-center opacity-0 transition-opacity duration-[2000ms] p-6">
+                <div id="stage-intro" class="absolute inset-0 flex items-center justify-center pointer-events-none hidden">
+                    <p class="text-3xl md:text-5xl font-script text-rose-100 opacity-0 transform translate-y-8 transition-all duration-[2000ms]" id="intro-text">"For you, my love..."</p>
+                </div>
+
+                <div id="stage-main" class="hidden flex-col items-center w-full max-w-4xl mx-auto">
+                    <div class="mb-14 opacity-0 transition-opacity duration-[3000ms]" id="anim-ring">
+                        <div class="rings-stage">
+                            <div class="ring-set">
+                                <div class="ring ring-1"></div>
+                                <div class="ring ring-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6 mb-12 w-full text-center">
+                        <h3 class="text-rose-400 text-[10px] uppercase tracking-[0.5em] font-sans opacity-0 transition-all duration-[2000ms] transform translate-y-8" id="anim-label-to">My Dearest</h3>
+                        <h1 class="text-5xl md:text-7xl font-display text-shimmer text-glow opacity-0 transition-all duration-[2000ms] transform translate-y-10" id="anim-name-to">Receiver</h1>
+                    </div>
+
+                    <div class="relative glass-panel p-8 md:p-16 rounded-sm w-full text-left opacity-0 transition-all duration-[2000ms] transform scale-95 origin-center max-w-2xl mx-auto" id="anim-message-box">
+                        <div class="absolute top-0 left-0 w-12 h-12 border-t border-l border-rose-500/30 rounded-tl-xl"></div>
+                        <div class="absolute top-0 right-0 w-12 h-12 border-t border-r border-rose-500/30 rounded-tr-xl"></div>
+                        <div class="absolute bottom-0 left-0 w-12 h-12 border-b border-l border-rose-500/30 rounded-bl-xl"></div>
+                        <div class="absolute bottom-0 right-0 w-12 h-12 border-b border-r border-rose-500/30 rounded-br-xl"></div>
+
+                        <div class="text-center mb-8 opacity-60">
+                             <svg class="divider-svg" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor"/></svg>
+                        </div>
+                        <div class="min-h-[100px] md:min-h-[140px] flex items-center justify-center">
+                            <p id="typewriter-text" class="text-xl md:text-2xl text-rose-50/90 font-serif leading-loose text-center"></p>
+                        </div>
+                        <div class="text-center mt-8 opacity-60">
+                             <svg class="divider-svg" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 0 100 5" stroke="currentColor"/></svg>
+                        </div>
+
+                        <div class="mt-12 text-center opacity-0 transition-opacity duration-[2000ms] delay-500" id="anim-signoff">
+                            <p class="text-[9px] text-rose-400 uppercase tracking-[0.4em] mb-3">Yours Forever</p>
+                            <p class="text-4xl md:text-5xl font-script text-rose-100 text-glow" id="display-from">Sender</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-20 opacity-0 transition-opacity duration-[3000ms]" id="anim-final">
+                        <a href="index.html" class="inline-block px-6 py-2 border-b border-rose-500/20 hover:border-rose-400 text-[9px] uppercase tracking-[0.3em] text-rose-500/50 hover:text-rose-200 transition-all">Send Your Own</a>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="toggleAudio()" class="fixed bottom-6 right-6 md:bottom-10 md:right-10 text-rose-500/40 hover:text-rose-300 transition-colors z-[100] p-4 bg-rose-950/20 rounded-full backdrop-blur-sm border border-rose-500/10">
+                <svg id="icon-sound-on" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+                <svg id="icon-sound-off" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                </svg>
+            </button>
+        </section>
+    </div>
+
+    <script>
+        // CONFIG
+        const CONFIG = {
+            animationSpeed: { typewriter: 75 }
+        };
+
+        // STATE
+        const state = {
+            from: '',
+            to: '',
+            message: '',
+            musicEnabled: true,
+            isRevealed: false
+        };
+
+        // DOM CACHE (Populated in Init)
+        let dom = {};
+
+        // ROUTER
+        const router = {
+            init: () => {
+                const params = new URLSearchParams(window.location.search);
+                if (params.has('to') && params.has('from') && params.has('msg')) {
+                    state.to = decodeURIComponent(params.get('to') || '');
+                    state.from = decodeURIComponent(params.get('from') || '');
+                    state.message = decodeURIComponent(params.get('msg') || '');
+                    router.navigateTo('card');
+                } else {
+                    router.navigateTo('landing');
+                }
+            },
+            navigateTo: (view) => {
+                if (!dom.sections) return;
+                
+                // Hide all
+                Object.values(dom.sections).forEach(el => {
+                    if (el) {
+                        el.classList.add('hidden');
+                        el.classList.remove('fade-enter-active');
+                    }
+                });
+                
+                // Show target
+                const target = dom.sections[view];
+                if (target) {
+                    target.classList.remove('hidden');
+                    if (view === 'card') {
+                        resetCardView();
+                    } else {
+                        // Use setTimeout for reliable transition
+                        setTimeout(() => {
+                            target.classList.add('fade-enter-active');
+                            target.style.opacity = 1;
+                            target.style.transform = 'translateY(0)';
+                        }, 50);
+                    }
+                }
+            }
+        };
+
+        // FORM HANDLER
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const from = document.getElementById('input-from').value.trim();
+            const to = document.getElementById('input-to').value.trim();
+            const msg = document.getElementById('input-msg').value.trim();
+            
+            if(!from || !to || !msg) return;
+
+            const url = new URL(window.location);
+            url.searchParams.set('to', to);
+            url.searchParams.set('from', from);
+            url.searchParams.set('msg', msg);
+            
+            if(document.getElementById('share-link-input')) {
+                document.getElementById('share-link-input').value = url.toString();
+            }
+            
+            if(dom.previewBtn) {
+                dom.previewBtn.onclick = () => {
+                    state.to = to;
+                    state.from = from;
+                    state.message = msg;
+                    router.navigateTo('card');
+                };
+            }
+
+            router.navigateTo('share');
+        }
+
+        // COPY
+        function copyLink() {
+            const input = document.getElementById('share-link-input');
+            if(!input) return;
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value).then(() => {
+                const btn = input.nextElementSibling;
+                const originalText = btn.innerText;
+                btn.innerText = "COPIED";
+                setTimeout(() => { btn.innerText = originalText; }, 2000);
+            });
+        }
+
+        // ANIMATION LOGIC
+        function resetCardView() {
+            if(dom.card.nameTo) dom.card.nameTo.innerText = state.to;
+            if(document.getElementById('display-from')) document.getElementById('display-from').innerText = state.from;
+            if(dom.card.typewriter) dom.card.typewriter.innerText = '';
+            
+            state.isRevealed = false;
+            
+            if(dom.card.opener) {
+                dom.card.opener.style.opacity = '1';
+                dom.card.opener.style.pointerEvents = 'auto';
+            }
+            if(dom.card.content) dom.card.content.style.opacity = '0';
+            if(dom.card.stageIntro) dom.card.stageIntro.classList.add('hidden');
+            if(dom.card.stageMain) dom.card.stageMain.classList.add('hidden');
+
+            // Reset animated elements
+            [dom.card.ring, dom.card.labelTo, dom.card.nameTo, dom.card.msgBox, dom.card.signoff, dom.card.final].forEach(el => {
+                if(el) {
+                    el.style.opacity = '0';
+                    el.style.transform = '';
+                }
+            });
+        }
+
+        async function playCardSequence() {
+            if (state.isRevealed) return;
+            state.isRevealed = true;
+
+            // Opener
+            if(dom.card.opener) {
+                dom.card.opener.style.opacity = '0';
+                dom.card.opener.style.pointerEvents = 'none';
+            }
+            if(dom.card.content) dom.card.content.style.opacity = '1';
+            
+            try {
+                if(dom.audio) {
+                    dom.audio.volume = 0;
+                    await dom.audio.play();
+                    let vol = 0;
+                    const interval = setInterval(() => {
+                        if (vol < 0.4) {
+                            vol += 0.05;
+                            dom.audio.volume = vol;
+                        } else {
+                            clearInterval(interval);
+                        }
+                    }, 200);
+                }
+            } catch(e) { console.log("Audio play restricted"); }
+
+            // Intro
+            if(dom.card.stageIntro) {
+                dom.card.stageIntro.classList.remove('hidden');
+                setTimeout(() => {
+                   if(dom.card.introText) {
+                       dom.card.introText.style.opacity = '1';
+                       dom.card.introText.style.transform = 'translateY(0)';
+                   }
+                }, 50);
+            }
+
+            await wait(3500);
+
+            if(dom.card.introText) {
+                dom.card.introText.style.opacity = '0';
+                dom.card.introText.style.transform = 'translateY(-20px)';
+            }
+            
+            await wait(1500);
+            if(dom.card.stageIntro) dom.card.stageIntro.classList.add('hidden');
+
+            // Main
+            if(dom.card.stageMain) {
+                dom.card.stageMain.classList.remove('hidden');
+                dom.card.stageMain.classList.add('flex');
+            }
+
+            if(dom.card.ring) dom.card.ring.style.opacity = '1';
+            
+            await wait(1500);
+
+            if(dom.card.labelTo) {
+                dom.card.labelTo.style.opacity = '1';
+                dom.card.labelTo.style.transform = 'translateY(0)';
+            }
+            
+            await wait(800);
+            
+            if(dom.card.nameTo) {
+                dom.card.nameTo.style.opacity = '1';
+                dom.card.nameTo.style.transform = 'translateY(0)';
+            }
+
+            await wait(2500);
+
+            if(dom.card.msgBox) {
+                dom.card.msgBox.style.opacity = '1';
+                dom.card.msgBox.style.transform = 'scale(1)';
+            }
+
+            await wait(1500);
+
+            if(dom.card.typewriter) {
+                dom.card.typewriter.classList.add('cursor');
+                await typeWriter(dom.card.typewriter, state.message);
+                dom.card.typewriter.classList.remove('cursor');
+            }
+
+            await wait(1000);
+
+            if(dom.card.signoff) dom.card.signoff.style.opacity = '1';
+
+            await wait(3000);
+            if(dom.card.final) dom.card.final.style.opacity = '1';
+        }
+
+        // UTILS
+        const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+        function typeWriter(element, text) {
+            return new Promise(resolve => {
+                if(!element) return resolve();
+                let i = 0;
+                function type() {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(type, CONFIG.animationSpeed.typewriter + (Math.random() * 50));
+                    } else {
+                        resolve();
+                    }
+                }
+                type();
+            });
+        }
+
+        function toggleAudio() {
+            const audio = dom.audio;
+            if(!audio) return;
+            const onIcon = document.getElementById('icon-sound-on');
+            const offIcon = document.getElementById('icon-sound-off');
+            
+            if (audio.paused) {
+                audio.play();
+                if(onIcon) onIcon.classList.remove('hidden');
+                if(offIcon) offIcon.classList.add('hidden');
+            } else {
+                audio.pause();
+                if(onIcon) onIcon.classList.add('hidden');
+                if(offIcon) offIcon.classList.remove('hidden');
+            }
+        }
+
+        // PARTICLES
+        function initParticles() {
+            const canvas = document.getElementById('particle-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Petal {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * -height;
+                    this.size = Math.random() * 2 + 1;
+                    this.speedY = Math.random() * 0.5 + 0.2;
+                    this.swaySpeed = Math.random() * 0.02 + 0.005; 
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.opacity = Math.random() * 0.4 + 0.1;
+                    this.color = Math.random() > 0.5 ? 
+                        `rgba(244, 63, 94, ${this.opacity})` : 
+                        `rgba(197, 157, 63, ${this.opacity})`;
+                }
+                update() {
+                    this.y += this.speedY;
+                    this.x += Math.sin(this.angle) * 0.5;
+                    this.angle += this.swaySpeed;
+                    if (this.y > height) this.reset();
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.ellipse(this.x, this.y, this.size, this.size * 0.6, this.angle, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < 70; i++) particles.push(new Petal());
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // INIT
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                // Populate DOM cache safely
+                dom = {
+                    sections: {
+                        landing: document.getElementById('landing-section'),
+                        create: document.getElementById('create-section'),
+                        share: document.getElementById('share-section'),
+                        card: document.getElementById('card-display')
+                    },
+                    card: {
+                        content: document.getElementById('card-content'),
+                        opener: document.getElementById('opener'),
+                        introText: document.getElementById('intro-text'),
+                        stageIntro: document.getElementById('stage-intro'),
+                        stageMain: document.getElementById('stage-main'),
+                        ring: document.getElementById('anim-ring'),
+                        labelTo: document.getElementById('anim-label-to'),
+                        nameTo: document.getElementById('anim-name-to'),
+                        msgBox: document.getElementById('anim-message-box'),
+                        typewriter: document.getElementById('typewriter-text'),
+                        signoff: document.getElementById('anim-signoff'),
+                        final: document.getElementById('anim-final'),
+                        opener: document.getElementById('opener')
+                    },
+                    audio: document.getElementById('bg-music'),
+                    previewBtn: document.getElementById('btn-preview')
+                };
+
+                initParticles();
+                router.init();
+
+                // Fallback for landing opacity if something weird happens with transitions
+                setTimeout(() => {
+                    if (!state.to && dom.sections.landing) {
+                        dom.sections.landing.style.opacity = 1;
+                        dom.sections.landing.style.transform = 'translateY(0)';
+                    }
+                }, 100);
+
+            } catch(e) {
+                console.error("Init Error:", e);
+                // Emergency visibility
+                if(document.getElementById('landing-section')) {
+                    document.getElementById('landing-section').style.opacity = 1;
+                    document.getElementById('landing-section').classList.remove('fade-hidden');
+                }
+            }
+        });
+    </script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
